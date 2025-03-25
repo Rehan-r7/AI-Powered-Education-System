@@ -97,6 +97,7 @@ import json
 def get_gemini_response(user_input, conversation_history, system_prompt=None):
     """Gets a response from the Gemini API, managing conversation history and token limits."""
 
+
     # Construct the prompt
     prompt = ""
     if system_prompt:
