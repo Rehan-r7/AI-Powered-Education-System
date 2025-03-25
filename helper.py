@@ -46,9 +46,9 @@ def transcribe_video(video_path, model_size="base"):
 
 import google.generativeai as genai
 from fastapi import HTTPException
+from dotenv import load_dotenv
 
-
-genai.configure(api_key="AIzaSyAkzU0XWQgQRJlQezjXgcVLTfs2fx3exNQ")
+load_dotenv()
 
 generation_config = {
   "temperature": 1,
@@ -113,7 +113,6 @@ def get_gemini_response(user_input, conversation_history, system_prompt=None):
         response = model.generate_content(prompt)
         response.resolve() 
 
-       
         return response.text
         # try:
         #     json_response = json.loads(response.text)
