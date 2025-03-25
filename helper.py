@@ -113,7 +113,6 @@ def get_gemini_response(user_input, conversation_history, system_prompt=None):
         response = model.generate_content(prompt)
         response.resolve() 
 
-       
         return response.text
         # try:
         #     json_response = json.loads(response.text)
