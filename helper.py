@@ -48,7 +48,7 @@ import google.generativeai as genai
 from fastapi import HTTPException
 
 
-genai.configure(api_key="")
+genai.configure(api_key="AIzaSyAkzU0XWQgQRJlQezjXgcVLTfs2fx3exNQ")
 
 generation_config = {
   "temperature": 1,
@@ -114,12 +114,13 @@ def get_gemini_response(user_input, conversation_history, system_prompt=None):
         response.resolve() 
 
        
-        try:
-            json_response = json.loads(response.text)
-            return json_response 
-        except json.JSONDecodeError:
+        return response.text
+        # try:
+        #     json_response = json.loads(response.text)
+        #     return json_response 
+        # except json.JSONDecodeError:
           
-            return {"response": response.text} 
+        #     return {"response": response.text, "error": "Invalid JSON response"} 
 
     except Exception as e:
         print(f"Error during API call: {e}")

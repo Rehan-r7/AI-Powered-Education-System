@@ -154,7 +154,7 @@ async def chat_endpoint(request: ChatRequest):
 
     conversation_history.append({"user": user_message, "model": model_response})
 
-    return {"response": model_response}
+    return {"result": model_response}
 
 
 @app.get("/clear_history")
