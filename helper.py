@@ -46,9 +46,9 @@ def transcribe_video(video_path, model_size="base"):
 
 import google.generativeai as genai
 from fastapi import HTTPException
+from dotenv import load_dotenv
 
-
-genai.configure(api_key="AIzaSyAkzU0XWQgQRJlQezjXgcVLTfs2fx3exNQ")
+load_dotenv()
 
 generation_config = {
   "temperature": 1,
