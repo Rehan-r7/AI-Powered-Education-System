@@ -124,3 +124,89 @@ def get_gemini_response(user_input, conversation_history, system_prompt=None):
     except Exception as e:
         print(f"Error during API call: {e}")
         raise HTTPException(status_code=500, detail=f"Error from Gemini API: {e}")
+
+
+# ----------------------------------------------------------Quiz Functions--------------------------------------------------------------------
+
+quiz_system_instruction = """
+
+**You are an AI assistant tasked with generating 10 multiple-choice questions (MCQs) based on the provided video transcript. Your goal is to create clear, relevant, and well-structured questions that accurately reflect the key points discussed in the transcript**.
+
+Guidelines:
+
+    1. Each question must have four answer choices (A, B, C, D).
+
+    2. Only one answer should be correct, while the others should be plausible but incorrect.
+
+    3. Ensure questions cover different aspects of the transcript, such as key facts, concepts, events, or themes.
+
+    4. The difficulty level should be moderate, ensuring accessibility while testing comprehension.
+
+    5. The response format must be in JSON, following the structure provided below.
+
+
+
+**Sample JSON Output Format** :
+
+{
+  "mcqs": [
+    {
+      "question": "What is the primary topic discussed in the video?",
+      "options": {
+        "A": "Topic A",
+        "B": "Topic B",
+        "C": "Topic C",
+        "D": "Topic D"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question": "Who was the main speaker in the video?",
+      "options": {
+        "A": "John Doe",
+        "B": "Jane Smith",
+        "C": "Robert Brown",
+        "D": "Alice Johnson"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question": "What key event was mentioned that took place in 2022?",
+      "options": {
+        "A": "Event X",
+        "B": "Event Y",
+        "C": "Event Z",
+        "D": "Event W"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}
+
+**Note :- (Only 3 sample questions are provided here, but the actual output should include 10 MCQs.)**
+
+"""
+
+quiz_model = genai.GenerativeModel(
+  model_name="gemini-2.0-flash",
+  generation_config=generation_config,
+  system_instruction=quiz_system_instruction
+)
+
+def get_quiz_question(transcript):
+    """
+    Generates a quiz question based on the provided transcript.
+    """
+    prompt = f"Based on the following transcript, generate a quiz :\n\n{transcript}\n\n :"
+    
+    try:
+        response = quiz_model.generate_content(prompt)
+        response.resolve() 
+
+        quiz_data = json.loads(response.text.strip())
+
+        return quiz_data 
+
+    except Exception as e:
+        print(f"Error during API call: {e}")
+        raise HTTPException(status_code=500, detail=f"Error from Gemini API: {e}")

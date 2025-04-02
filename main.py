@@ -1,10 +1,12 @@
+import json
 from pathlib import Path
 from typing import Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+from fastapi.responses import JSONResponse
 
 
 # Imports from helper.py
-from helper import transcribe_video
+from helper import transcribe_video, get_quiz_question
 
 
 app = FastAPI()
@@ -38,7 +40,7 @@ async def upload_video(file: UploadFile = File(...)):
         if file_ext not in allowed_extensions:
             raise HTTPException(status_code=400, detail="Invalid file type")
 
-        file_path = UPLOAD_DIR / file.filename
+        file_path = UPLOAD_DIR /  f"uploaded_video.{file_ext}"
 
         with file_path.open("wb") as buffer:
             buffer.write(await file.read())
@@ -154,7 +156,10 @@ async def chat_endpoint(request: ChatRequest):
 
     conversation_history.append({"user": user_message, "model": model_response})
 
-    return {"result": model_response}
+    response = json.loads(model_response.strip())
+
+    return JSONResponse(content=response)
+    # return {"result": model_response}
 
 
 @app.get("/clear_history")
@@ -164,3 +169,26 @@ async def clear_history():
     conversation_history = []
     transcript_storage.set_transcript(None)  # Clear transcript
     return {"message": "Conversation history and transcript cleared."}
+
+
+@app.get("/quiz")
+async def generate_quiz():
+    """Generates a quiz based on the latest transcript."""
+    
+    try : 
+
+        transcript = transcript_storage.get_transcript()
+
+        if not transcript:
+            return {"response": "I currently do not have any transcript. Please upload a video first."}
+        
+        quiz_questions = get_quiz_question(transcript)
+        # print(quiz_questions)
+
+        return JSONResponse(content=quiz_questions)
+        # return quiz_questions
+    
+    except Exception as e : 
+
+        raise HTTPException(status_code=500, detail=str(e))
+
